@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Empleados | Expertos Contables RD</title>
+    <link rel="icon" type="image/png" href="contables.png">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            overflow: hidden;
+            background: #020c1b;
+            font-family: 'Poppins', sans-serif;
+        }
+        .login-page {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #0a192f 0%, #020c1b 100%);
+            position: relative;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 500px;
+            padding: 3rem;
+            text-align: center;
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            background: rgba(10, 25, 47, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            animation: cardEntrance 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .login-logo {
+            width: 100px;
+            margin-bottom: 1.5rem;
+            filter: drop-shadow(0 0 15px var(--accent-gold));
+        }
+        .login-title {
+            font-size: 1.8rem;
+            color: var(--text-white);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .login-subtitle {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Access Options Tabs */
+        .access-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+        .tab-btn {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            padding: 12px 5px;
+            border-radius: 12px;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .tab-btn i { font-size: 1.2rem; }
+        .tab-btn.active {
+            background: rgba(197, 160, 89, 0.1);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+        }
+
+        .access-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+        .access-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-form .form-group {
+            text-align: left;
+            margin-bottom: 1.2rem;
+        }
+        .login-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(197, 160, 89, 0.3);
+        }
+
+        /* QR, NFC, FACE ID Styles */
+        .smart-access-container {
+            padding: 2rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 20px;
+            border: 1px dashed var(--glass-border);
+            margin-bottom: 1.5rem;
+        }
+        .qr-placeholder {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .qr-placeholder img { width: 100%; }
+        .scanning-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-gold);
+            box-shadow: 0 0 15px var(--accent-gold);
+            animation: scan 2s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        .nfc-animation {
+            font-size: 4rem;
+            color: var(--accent-gold);
+            animation: pulse 2s infinite;
+            margin-bottom: 1rem;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        .face-id-scanner {
+            width: 150px;
+            height: 150px;
+            border: 2px solid var(--accent-gold);
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .face-id-scanner i { font-size: 5rem; color: var(--accent-gold); }
+        .scanner-circle {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid transparent;
+            border-top-color: var(--accent-gold);
+            border-radius: 50%;
+            animation: rotate 2s linear infinite;
+        }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .error-msg {
+            color: #ff4d4d;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: none;
+            font-weight: 600;
+        }
+
+        /* Permission Prompt Modal */
+        .permission-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(15px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .permission-card {
+            background: #1a2a40;
+            width: 320px;
+            padding: 2rem;
+            border-radius: 25px;
+            text-align: center;
+            border: 1px solid var(--accent-gold);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: promptEntrance 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes promptEntrance {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .permission-card i {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+        .permission-card h3 {
+            color: white;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        .permission-card p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+        .permission-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .btn-cancel {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-allow {
+            background: var(--accent-gold);
+            color: black;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <div class="login-card">
+            <img src="contables.png" alt="Logo" class="login-logo">
+            <h1 class="login-title">Acceso Corporativo</h1>
+            <p class="login-subtitle">Seleccione su método de entrada preferido</p>
+
+            <div class="access-tabs">
+                <button class="tab-btn active" data-target="traditional">
+                    <i class="fas fa-key"></i> Pass
+                </button>
+                <button class="tab-btn" data-target="qr">
+                    <i class="fas fa-qrcode"></i> QR
+                </button>
+                <button class="tab-btn" data-target="nfc">
+                    <i class="fas fa-id-card"></i> NFC
+                </button>
+                <button class="tab-btn" data-target="face">
+                    <i class="fas fa-face-viewfinder"></i> Face
+                </button>
+            </div>
+            
+            <!-- Traditional Login -->
+            <div id="traditional" class="access-content active">
+                <form id="loginForm" class="login-form">
+                    <div class="form-group">
+                        <label>ID de Empleado</label>
+                        <input type="text" id="empID" placeholder="Ej: EMP-2026-001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Contraseña</label>
+                        <input type="password" id="empPass" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn-login">Entrar al Sistema</button>
+                </form>
+            </div>
+
+            <!-- QR Login -->
+            <div id="qr" class="access-content">
+                <div class="smart-access-container">
+                    <div class="qr-placeholder" id="qrContainer">
+                        <!-- QR se genera dinámicamente -->
+                        <div class="scanning-line"></div>
+                    </div>
+                    <p style="color: white; font-size: 0.85rem;">Escanee su código QR personal desde su móvil para iniciar sesión automáticamente.</p>
+                    <p style="color: var(--accent-gold); font-size: 0.7rem; margin-top: 10px; opacity: 0.8;">
+                        <i class="fas fa-info-circle"></i> En entorno local, puedes <strong>hacer clic en el QR</strong> para simular el escaneo.
+                    </p>
+                </div>
+                <button class="btn-login" onclick="simulateSmartLogin('QR')">Simular Escaneo QR</button>
+            </div>
+
+            <!-- NFC Login -->
+            <div id="nfc" class="access-content">
+                <div class="smart-access-container">
+                    <div class="nfc-animation">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <p style="color: white; font-size: 0.85rem;">Acerque su tarjeta corporativa o teléfono con NFC habilitado al lector.</p>
+                </div>
+                <button class="btn-login" onclick="simulateSmartLogin('NFC')">Simular Lectura NFC</button>
+            </div>
+
+            <!-- Face ID Login -->
+            <div id="face" class="access-content">
+                <div class="smart-access-container">
+                    <div class="face-id-scanner">
+                        <i class="fas fa-user-circle"></i>
+                        <div class="scanner-circle"></div>
+                    </div>
+                    <p style="color: white; font-size: 0.85rem;">Posicione su rostro frente a la cámara para validación biométrica.</p>
+                </div>
+                <button class="btn-login" onclick="simulateSmartLogin('Face ID')">Iniciar Reconocimiento</button>
+            </div>
+
+            <div id="errorMsg" class="error-msg">Credenciales incorrectas. Intente de nuevo.</div>
+            
+            <div style="margin-top: 2rem;">
+                <a href="index.html" style="color: var(--text-gray); text-decoration: none; font-size: 0.85rem; transition: color 0.3s;" onmouseover="this.style.color='var(--accent-gold)'" onmouseout="this.style.color='var(--text-gray)'">
+                    <i class="fas fa-arrow-left"></i> Volver a la página principal
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR/Smart Access Permission Modal -->
+    <div id="permissionModal" class="permission-modal">
+        <div class="permission-card">
+            <i class="fas fa-shield-check"></i>
+            <h3>Validación de Acceso</h3>
+            <p id="permissionText">El sistema ha detectado una solicitud de acceso para el empleado <strong>EMP-2026-001</strong> vía QR. ¿Desea permitir el ingreso desde este dispositivo?</p>
+            <div class="permission-btns">
+                <button class="btn-cancel" onclick="closePermission()">Cancelar</button>
+                <button class="btn-allow" onclick="proceedWithAccess()">Permitir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Overlay (Hidden by default) -->
+    <div id="verifyOverlay" class="permission-modal" style="background: rgba(2, 12, 27, 0.95);">
+        <div class="permission-card" style="border: none; background: transparent; box-shadow: none;">
+            <div class="face-id-scanner" style="width: 120px; height: 120px; margin-bottom: 2rem;">
+                <i class="fas fa-shield-check" style="font-size: 3.5rem;"></i>
+                <div class="scanner-circle"></div>
+            </div>
+            <h3 id="verifyTitle" style="font-size: 1.5rem;">Esperando Autorización...</h3>
+            <p id="verifyText">Escanee el QR con su móvil para validar su identidad.</p>
+            <div id="expiryTimer" style="color: var(--accent-gold); font-weight: 800; font-size: 0.8rem; margin-top: 1rem;"></div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+
+    <script>
+        // Base de datos de empleados (17 empleados + Admin)
+        const employeeDB = {
+            "admin": "admin1602",
+            "EMP-2026-001": "pass001",
+            "EMP-2026-002": "contable02",
+            "EMP-2026-003": "expert03",
+            "EMP-2026-004": "finance04",
+            "EMP-2026-005": "rd2026_05",
+            "EMP-2026-006": "access06",
+            "EMP-2026-007": "secure07",
+            "EMP-2026-008": "alfa08",
+            "EMP-2026-009": "beta09",
+            "EMP-2026-010": "gamma10",
+            "EMP-2026-011": "delta11",
+            "EMP-2026-012": "omega12",
+            "EMP-2026-013": "sigma13",
+            "EMP-2026-014": "zeta14",
+            "EMP-2026-015": "kappa15",
+            "EMP-2026-016": "lambda16",
+            "EMP-2026-017": "rho17"
+        };
+
+        // Generar QR real con URL
+        let currentSessionID = '';
+        let authCheckInterval;
+        let expiryTime;
+
+        function generateSmartQR() {
+            const qrContainer = document.getElementById('qrContainer');
+            if (!qrContainer) return;
+
+            // Generate Unique Session ID
+            currentSessionID = 'SESS-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            let baseUrl = window.location.href.split('?')[0];
+            let folderUrl = baseUrl.substring(0, baseUrl.lastIndexOf('/') + 1);
+            const authUrl = `${folderUrl}confirmar-acceso.html?sid=${currentSessionID}&emp=EMP-2026-001`;
+            
+            const qrImg = qrContainer.querySelector('img') || document.createElement('img');
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(authUrl)}&timestamp=${Date.now()}`;
+            qrImg.style.width = "100%";
+            qrImg.style.height = "100%";
+            qrImg.onclick = () => window.open(authUrl, '_blank'); // Click para simular móvil
+            if (!qrContainer.contains(qrImg)) qrContainer.prepend(qrImg);
+
+            // Set Expiry (3 minutes)
+            expiryTime = Date.now() + (3 * 60 * 1000);
+            updateTimerDisplay();
+
+            // Start Polling
+            if (authCheckInterval) clearInterval(authCheckInterval);
+            authCheckInterval = setInterval(checkAuthStatus, 2000);
+        }
+
+        function updateTimerDisplay() {
+            const timerDiv = document.getElementById('expiryTimer');
+            const interval = setInterval(() => {
+                const now = Date.now();
+                const diff = expiryTime - now;
+                if (diff <= 0) {
+                    clearInterval(interval);
+                    timerDiv.innerHTML = "QR EXPIRADO. GENERANDO NUEVO...";
+                    generateSmartQR();
+                    return;
+                }
+                const mins = Math.floor(diff / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                timerDiv.innerHTML = `EXPIRA EN: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            }, 1000);
+        }
+
+        function checkAuthStatus() {
+            const authDataRaw = localStorage.getItem(`auth_${currentSessionID}`);
+            if (authDataRaw) {
+                const authData = JSON.parse(authDataRaw);
+                if (authData.status === 'authorized') {
+                    clearInterval(authCheckInterval);
+                    showVerificationSuccess(authData);
+                }
+            }
+        }
+
+        function showVerificationSuccess(data) {
+            const overlay = document.getElementById('verifyOverlay');
+            const title = document.getElementById('verifyTitle');
+            const text = document.getElementById('verifyText');
+            
+            overlay.style.display = 'flex';
+            title.innerHTML = "Acceso Autorizado";
+            title.style.color = "#2ecc71";
+            text.innerHTML = `Identidad validada: <strong>${data.empID}</strong><br><small>Dispositivo: ${data.device} | IP: ${data.ip}</small>`;
+            
+            // Log security
+            if (window.ExpertosDB) {
+                ExpertosDB.logs.add('Acceso QR Inteligente', `Autorizado por móvil (${data.device}) para ${data.empID}`);
+            }
+
+            setTimeout(() => {
+                text.innerText = "Iniciando sesión...";
+                setTimeout(() => {
+                    sessionStorage.setItem('empLoggedIn', 'true');
+                    sessionStorage.setItem('empID', data.empID);
+                    sessionStorage.setItem('loginMethod', 'QR Inteligente');
+                    window.location.href = 'panel-empleados.html';
+                }, 1500);
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSmartQR();
+            
+            // Tab Navigation
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.access-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-target');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+
+            // Traditional Login Logic
+            const loginForm = document.getElementById('loginForm');
+            const errorMsg = document.getElementById('errorMsg');
+
+            if (loginForm) {
+                loginForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const id = document.getElementById('empID').value.trim();
+                    const pass = document.getElementById('empPass').value.trim();
+
+                    console.log('Intento de login para:', id);
+
+                    // Verificación contra la base de datos
+                    if (employeeDB[id] && employeeDB[id] === pass) {
+                        // Success! Store in session and redirect
+                        sessionStorage.setItem('empLoggedIn', 'true');
+                        sessionStorage.setItem('empID', id);
+                        sessionStorage.setItem('loginMethod', 'Contraseña');
+                        
+                        // Security Log
+                        if (window.ExpertosDB) {
+                            ExpertosDB.logs.add('Inicio de Sesión', 'Acceso exitoso vía ID/Contraseña');
+                        }
+
+                        window.location.href = 'panel-empleados.html';
+                    } else {
+                        errorMsg.style.display = 'block';
+                        setTimeout(() => {
+                            errorMsg.style.display = 'none';
+                        }, 3000);
+                    }
+                });
+            }
+        });
+
+        // Smart Login Simulation
+        let pendingMethod = '';
+        function simulateSmartLogin(method) {
+            const btn = event.target;
+            btn.innerText = `Validando ${method}...`;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            setTimeout(() => {
+                pendingMethod = method;
+                document.getElementById('permissionModal').style.display = 'flex';
+                
+                // Update text based on method
+                const pText = document.getElementById('permissionText');
+                if (method === 'QR') {
+                    pText.innerHTML = `El sistema ha detectado una solicitud de acceso para el empleado <strong>EMP-2026-001</strong> vía QR. ¿Desea permitir el ingreso desde este iPhone/Dispositivo?`;
+                } else if (method === 'NFC') {
+                    pText.innerHTML = `Se ha detectado una tarjeta corporativa (EMP-2026-001) vía NFC. ¿Permitir el acceso al panel?`;
+                } else {
+                    pText.innerHTML = `Identidad confirmada para <strong>EMP-2026-001</strong> mediante Reconocimiento Facial. ¿Confirmar inicio de sesión?`;
+                }
+            }, 1500);
+        }
+
+        function closePermission() {
+            document.getElementById('permissionModal').style.display = 'none';
+            window.location.reload(); // Reset state
+        }
+
+        function proceedWithAccess() {
+            const randomEmp = "EMP-2026-001"; 
+            sessionStorage.setItem('empLoggedIn', 'true');
+            sessionStorage.setItem('empID', randomEmp);
+            sessionStorage.setItem('loginMethod', pendingMethod);
+            
+            // Security Log
+            if (window.ExpertosDB) {
+                ExpertosDB.logs.add('Inicio de Sesión', `Acceso exitoso vía ${pendingMethod} (Permiso concedido)`);
+            }
+            
+            window.location.href = 'panel-empleados.html';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Interno | Expertos Contables RD</title>
+    <link rel="icon" type="image/png" href="contables.png">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: #020c1b;
+            overflow: hidden;
+        }
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            height: 100vh;
+        }
+        .admin-sidebar {
+            background: var(--secondary-blue);
+            border-right: 1px solid var(--accent-gold);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .admin-content {
+            padding: 2rem;
+            background: radial-gradient(at top left, #0a192f 0%, #020c1b 100%);
+            overflow-y: auto;
+            position: relative;
+        }
+        .sidebar-logo {
+            width: 60px;
+            margin-bottom: 2rem;
+        }
+        .nav-menu {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        .nav-item {
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            border-radius: 10px;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(197, 160, 89, 0.1);
+            color: var(--accent-gold);
+            transform: translateX(10px);
+        }
+        .section-panel {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .section-panel.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .admin-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .btn-primary {
+            font-size: 0.85rem;
+            padding: 0.8rem 1.2rem;
+        }
+        .admin-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1.5rem;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+        }
+        .admin-card:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+            background: rgba(197, 160, 89, 0.05);
+        }
+        .admin-card i {
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+        .admin-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .admin-card p {
+            font-size: 0.85rem;
+        }
+        .logout-btn {
+            margin-top: auto;
+            color: #ff4d4d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        .logout-btn:hover {
+            background: rgba(255, 77, 77, 0.1);
+        }
+        /* Table Styles for Clients */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 0.85rem;
+        }
+        .admin-table th, .admin-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+        .admin-table th {
+            background: rgba(197, 160, 89, 0.1);
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+        .status-completed { background: rgba(46, 204, 113, 0.2); color: #2ecc71; }
+        .status-pending { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .status-process { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+        .status-review { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+        .status-delivered { background: rgba(26, 188, 156, 0.2); color: #1abc9c; }
+        .status-cancelled { background: rgba(231, 76, 60, 0.2); color: #e74c3c; }
+
+        .status-select {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border: 1px solid var(--glass-border);
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            outline: none;
+            cursor: pointer;
+        }
+        .status-select option {
+            background: #0a192f;
+            color: white;
+        }
+
+        /* Modal / Client File View */
+        .client-file-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .client-file-content {
+            background: #0a192f;
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            border-radius: 25px;
+            border: 1px solid var(--accent-gold);
+            padding: 2.5rem;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(197, 160, 89, 0.2);
+        }
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-modal:hover { color: var(--accent-gold); }
+
+        .client-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .action-btn {
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            background: rgba(255,255,255,0.02);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .action-btn:hover {
+            background: var(--accent-gold);
+            color: black;
+            transform: translateY(-3px);
+        }
+        .action-btn.active {
+            background: var(--accent-gold);
+            color: black;
+        }
+
+        .file-viewer-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            min-height: 300px;
+            border: 1px dashed rgba(197, 160, 89, 0.3);
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .file-item:hover {
+            border-color: var(--accent-gold);
+            background: rgba(197, 160, 89, 0.05);
+        }
+        .file-info { display: flex; align-items: center; gap: 15px; }
+        .file-info i { font-size: 1.5rem; color: var(--accent-gold); }
+
+        /* Stats Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+        .stat-card h2 { font-size: 2.5rem; color: var(--accent-gold); margin-bottom: 0.5rem; }
+        .stat-card p { font-size: 0.8rem; color: var(--text-gray); font-weight: 600; }
+        
+        /* Config Section */
+        .config-list {
+            display: grid;
+            gap: 1.5rem;
+            max-width: 600px;
+        }
+        .config-item {
+            background: rgba(255,255,255,0.03);
+            padding: 1.5rem;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--glass-border);
+        }
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: #333;
+            border-radius: 25px;
+        }
+        .toggle-switch.active { background: var(--accent-gold); }
+        .toggle-knob {
+            position: absolute;
+            top: 2.5px;
+            left: 2.5px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        .toggle-switch.active .toggle-knob { transform: translateX(25px); }
+
+        /* Advanced Dark Mode Overrides */
+        body.advanced-dark {
+            background: #000 !important;
+        }
+        body.advanced-dark .admin-sidebar {
+            background: #050505;
+            border-right: 1px solid #ffffff33;
+        }
+        body.advanced-dark .admin-content {
+            background: #000;
+        }
+        body.advanced-dark .admin-card, 
+        body.advanced-dark .config-item,
+        body.advanced-dark .admin-table {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.2);
+        }
+        body.advanced-dark .section-title,
+        body.advanced-dark h3 {
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999999;
+        }
+        .toast {
+            background: var(--accent-gold);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            margin-top: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: toastSlide 0.4s ease-out;
+        }
+        @keyframes toastSlide {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* AI Chatbot Styles */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 2000;
+            font-family: 'Poppins', sans-serif;
+        }
+        .chat-toggle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-gold);
+            color: black;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(197, 160, 89, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .chat-toggle-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+        .chat-window {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 350px;
+            height: 500px;
+            background: #0a192f;
+            border: 1px solid var(--accent-gold);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            animation: chatFade 0.4s ease-out;
+        }
+        @keyframes chatFade {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-header {
+            background: var(--accent-gold);
+            padding: 1rem;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header h4 { margin: 0; font-weight: 800; font-size: 0.9rem; }
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .msg.bot {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .msg.user {
+            background: var(--accent-gold);
+            color: black;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            font-weight: 600;
+        }
+        .chat-input-area {
+            padding: 1rem;
+            background: rgba(0,0,0,0.2);
+            display: flex;
+            gap: 10px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            outline: none;
+        }
+        .send-chat-btn {
+            background: var(--accent-gold);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div id="toast-container"></div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <img src="contables.png" alt="Logo" class="sidebar-logo">
+            <h3 style="color: white; font-size: 1.2rem;">Panel de Empleado</h3>
+            <p id="userDisplay" style="color: var(--accent-gold); font-size: 0.9rem; margin-top: 0.5rem;">ID: Cargando...</p>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-target="dashboard"><i class="fas fa-th-large"></i> Dashboard</li>
+                <li class="nav-item" data-target="clientes"><i class="fas fa-file-invoice"></i> Clientes</li>
+                <li class="nav-item" data-target="agenda"><i class="fas fa-calendar-check"></i> Mi Agenda</li>
+                <li class="nav-item" data-target="database"><i class="fas fa-database"></i> Base de Datos</li>
+                <li class="nav-item" data-target="config"><i class="fas fa-cog"></i> Configuración</li>
+            </ul>
+
+            <a href="#" class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </a>
+        </aside>
+
+        <main class="admin-content">
+            <!-- DASHBOARD SECTION -->
+            <div id="dashboard" class="section-panel active">
+                <div class="header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 class="section-title" style="margin-bottom: 0;">Panel Corporativo</h1>
+                    <div class="date" id="currentDate" style="color: var(--accent-gold); font-weight: 700;"></div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h2 id="stat-total-clients">0</h2>
+                        <p>CLIENTES TOTALES</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2 id="stat-pending-tasks" style="color: #f1c40f;">0</h2>
+                        <p>TAREAS PENDIENTES</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2 id="stat-completed-tasks" style="color: #2ecc71;">0</h2>
+                        <p>TRABAJOS COMPLETADOS</p>
+                    </div>
+                    <div class="stat-card">
+                        <h2 id="stat-active-orders" style="color: #3498db;">0</h2>
+                        <p>PEDIDOS ACTIVOS</p>
+                    </div>
+                </div>
+
+                <div class="admin-card-grid">
+                    <div class="admin-card">
+                        <i class="fas fa-users"></i>
+                        <h3>Mis Clientes</h3>
+                        <p id="client-count-text">Gestionando clientes...</p>
+                        <button class="btn-primary" style="margin-top: 1rem; width: 100%;" onclick="switchSection('clientes')">Ver Todos</button>
+                    </div>
+                    <div class="admin-card">
+                        <i class="fas fa-tasks"></i>
+                        <h3>Tareas Pendientes</h3>
+                        <p id="task-count-text">Calculando tareas...</p>
+                        <button class="btn-primary" style="margin-top: 1rem; width: 100%;" onclick="switchSection('agenda')">Ver Agenda</button>
+                    </div>
+                    <div class="admin-card">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h3>Carga de Archivos</h3>
+                        <p>Sube documentos de auditoría de forma segura.</p>
+                        <input type="file" id="file-upload-input" style="display: none;" onchange="handleFileUpload(this)">
+                        <button class="btn-primary" style="margin-top: 1rem; width: 100%;" onclick="document.getElementById('file-upload-input').click()">Subir Ahora</button>
+                        <div id="upload-progress-container" style="display: none; margin-top: 1rem;">
+                            <div style="height: 5px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
+                                <div id="upload-progress-bar" style="width: 0%; height: 100%; background: var(--accent-gold); transition: width 0.3s;"></div>
+                            </div>
+                            <small id="upload-status" style="font-size: 0.7rem; color: var(--accent-gold); margin-top: 5px; display: block;">Subiendo...</small>
+                             <button id="btn-view-vault" class="btn-primary" style="display: none; margin-top: 1rem; width: 100%; background: #2ecc71; color: white;" onclick="location.href='archivo-seguro.html'">Ver Base de Datos de Archivos</button>
+                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIENTES SECTION -->
+            <div id="clientes" class="section-panel">
+                <h1 class="section-title">Gestión de Clientes</h1>
+                <p id="clients-user-info" style="color: var(--accent-gold); margin-bottom: 2rem;"></p>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre Cliente</th>
+                            <th>Servicio</th>
+                            <th>Fecha Límite</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clients-table-body">
+                        <!-- Dynamic content here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- AGENDA SECTION -->
+            <div id="agenda" class="section-panel">
+                <h1 class="section-title">Mi Agenda Operativa</h1>
+                <div class="calendar-container glass-card" style="padding: 2rem;">
+                    <h3 id="agenda-user-info" style="color: var(--accent-gold); margin-bottom: 1.5rem;">Próximas Tareas</h3>
+                    <div id="agenda-list" class="event-list" style="display: grid; gap: 1rem;">
+                        <!-- Dynamic tasks here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONFIG SECTION -->
+            <div id="config" class="section-panel">
+                <h1 class="section-title">Configuración del Panel</h1>
+                <div class="config-list">
+                    <div class="config-item">
+                        <div>
+                            <strong>Modo Oscuro Avanzado</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-gray);">Optimizar contraste para trabajo nocturno.</p>
+                        </div>
+                        <div class="toggle-switch" id="toggle-dark-mode"><div class="toggle-knob"></div></div>
+                    </div>
+                    <div class="config-item">
+                        <div>
+                            <strong>Notificaciones de Escritorio</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-gray);">Alertas de vencimientos fiscales.</p>
+                        </div>
+                        <div class="toggle-switch" id="toggle-notifications"><div class="toggle-knob"></div></div>
+                    </div>
+                    <div class="config-item">
+                        <div>
+                            <strong>Seguridad de Doble Factor</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-gray);">Aumentar protección de datos sensibles.</p>
+                        </div>
+                        <div class="toggle-switch" id="toggle-2fa"><div class="toggle-knob"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CLIENT TASKS SECTION (SIMULATED) -->
+            <div id="client-tasks" class="section-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 class="section-title" id="client-tasks-title">Gestión de Tareas</h1>
+                    <button class="btn-primary" onclick="switchSection('clientes')" style="background: var(--secondary-blue); border: 1px solid var(--accent-gold);">
+                        <i class="fas fa-arrow-left"></i> Volver a Clientes
+                    </button>
+                </div>
+                <div class="glass-card" style="padding: 2rem; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--glass-border);">
+                    <h3 id="tasks-client-name" style="color: var(--accent-gold); margin-bottom: 1.5rem;">Cargando tareas...</h3>
+                    <div id="client-tasks-list" class="event-list" style="display: grid; gap: 1rem;">
+                        <!-- Dynamic tasks for specific client -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATABASE SECTION -->
+            <div id="database" class="section-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h1 class="section-title" style="margin-bottom: 0;">Base de Datos en Tiempo Real</h1>
+                    <button class="btn-primary" id="export-db-btn" style="background: #2ecc71; color: white;">
+                        <i class="fas fa-file-export"></i> Exportar a CSV (Excel)
+                    </button>
+                </div>
+                
+                <div class="db-tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                    <button class="btn-primary db-tab-btn active" data-tab="db-contacts">Mensajes de Contacto</button>
+                    <button class="btn-primary db-tab-btn" data-tab="db-orders">Pedidos de Tienda</button>
+                    <button class="btn-primary db-tab-btn" data-tab="db-logs">Log de Seguridad</button>
+                </div>
+
+                <div id="db-contacts" class="db-tab-content active">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Asunto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-contacts-body">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="db-orders" class="db-tab-content" style="display: none;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID Pedido</th>
+                                <th>Total</th>
+                                <th>Método</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-orders-body">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="db-logs" class="db-tab-content" style="display: none;">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Detalles</th>
+                                <th>Método Acceso</th>
+                                <th>Fecha/Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db-logs-body">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Expediente del Cliente -->
+    <div id="clientFileModal" class="client-file-modal">
+        <div class="client-file-content">
+            <span class="close-modal" onclick="closeClientFile()">&times;</span>
+            <h1 id="modal-client-name" style="color: var(--accent-gold); margin-bottom: 0.5rem;">Expediente: Cliente</h1>
+            <p id="modal-client-service" style="color: var(--text-gray); font-weight: 600; margin-bottom: 2rem;">Servicio: Auditoría</p>
+            
+            <div class="client-actions-grid">
+                <button class="action-btn" onclick="handleAction('revisar')"><i class="fas fa-search"></i> Revisar</button>
+                <button class="action-btn" onclick="handleAction('comenzar')"><i class="fas fa-play"></i> Comenzar Trabajo</button>
+                <button class="action-btn" onclick="handleAction('archivos')"><i class="fas fa-folder-open"></i> Ver Archivos</button>
+                <button class="action-btn" onclick="handleAction('historial')"><i class="fas fa-history"></i> Historial</button>
+                <button class="action-btn" onclick="handleAction('finalizar')"><i class="fas fa-check-double"></i> Finalizar</button>
+            </div>
+
+            <div id="file-viewer" class="file-viewer-container">
+                <h3 id="viewer-title" style="margin-bottom: 1.5rem; color: var(--accent-gold);">Documentos del Cliente</h3>
+                <div id="files-list">
+                    <!-- Dynamic files -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chatbot Widget -->
+    <div class="ai-chat-widget">
+        <button class="chat-toggle-btn" onclick="toggleChat()">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="chatWindow" class="chat-window">
+            <div class="chat-header">
+                <h4><i class="fas fa-microchip"></i> IA EXPERTOS CONTABLES</h4>
+                <i class="fas fa-times" style="cursor: pointer;" onclick="toggleChat()"></i>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <div class="msg bot">¡Hola! Soy tu asistente IA de Expertos Contables RD. ¿En qué puedo ayudarte hoy con la plataforma o información de la empresa?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." onkeypress="if(event.key==='Enter') sendChat()">
+                <button class="send-chat-btn" onclick="sendChat()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="database.js"></script>
+
+    <script>
+        // Global Error Handler for Debugging
+        window.onerror = function(msg, url, line) {
+            console.error(`Error: ${msg}\nLínea: ${line}`);
+            return false;
+        };
+
+        // Security Check
+        const authStatus = sessionStorage.getItem('empLoggedIn');
+        if (authStatus !== 'true') {
+            console.warn('Acceso no autorizado, redirigiendo...');
+            window.location.href = 'empleados.html';
+        }
+
+        const currentUser = sessionStorage.getItem('empID') || 'Administrador';
+        
+        // Wait for DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Panel: DOM Cargado. Inicializando para:', currentUser);
+            
+            const userDisplay = document.getElementById('userDisplay');
+            if (userDisplay) {
+                userDisplay.innerText = `ID: ${currentUser}`;
+            }
+
+            const dateDisplay = document.getElementById('currentDate');
+            if (dateDisplay) {
+                dateDisplay.innerText = new Date().toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            // Initialize Data and UI
+            try {
+                renderDashboard();
+                renderClients();
+                renderAgenda();
+            } catch (e) {
+                console.error('Error durante la inicialización de la interfaz:', e);
+            }
+        });
+
+        // --- Data Generation for 17 Employees ---
+        const services = ["Declaración ITBIS", "Nómina TSS", "Auditoría Interna", "Asesoría Fiscal", "Cierre Mensual", "Renovación RNC"];
+        const clientNames = ["Inversiones ", "Constructora ", "Comercial ", "Servicios ", "Grupo ", "Firma ", "Tienda ", "Restaurante ", "Agencia ", "Distribuidora "];
+        const lastNames = ["Valdez", "García", "Pérez", "Sánchez", "Matos", "Martínez", "Espinal", "Tejada", "Vargas", "Rosario"];
+
+        const STORAGE_KEY = `expertos_data_${currentUser}`;
+        
+        function loadSavedData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch (e) {
+                    console.error("Error parsing saved data:", e);
+                }
+            }
+            return null;
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+        }
+
+        function generateData(userID) {
+            const seed = userID.split('-').pop() || "0";
+            const numSeed = parseInt(seed) || 1;
+            
+            // Generate 50 Clients
+            const clients = [];
+            for (let i = 1; i <= 50; i++) {
+                const nameIdx = (numSeed + i) % clientNames.length;
+                const lastIdx = (numSeed * i) % lastNames.length;
+                const servIdx = (numSeed + i * 2) % services.length;
+                clients.push({
+                    name: `${clientNames[nameIdx]}${lastNames[lastIdx]} RD ${i}`,
+                    service: services[servIdx],
+                    date: `${1 + (i % 28)} Junio 2026`,
+                    status: i % 4 === 0 ? "Completado" : (i % 3 === 0 ? "Pendiente" : "En Proceso")
+                });
+            }
+
+            // Generate 40 Tasks
+            const tasks = [];
+            for (let i = 1; i <= 40; i++) {
+                const servIdx = (numSeed * i) % services.length;
+                const clientIdx = (numSeed + i) % 50;
+                tasks.push({
+                    title: `${services[servIdx]} - ${clients[clientIdx].name}`,
+                    time: `${(8 + (i % 10))}:00 ${i % 2 === 0 ? 'AM' : 'PM'}`,
+                    desc: `Prioridad ${i % 3 === 0 ? 'Alta' : 'Media'}`,
+                    status: "Pendiente"
+                });
+            }
+
+            return { clients, tasks };
+        }
+
+        let userData = loadSavedData() || generateData(currentUser);
+        if (!localStorage.getItem(STORAGE_KEY)) saveData();
+
+        // --- Render Dynamic Data ---
+        function renderDashboard() {
+            try {
+                document.getElementById('client-count-text').innerText = `Gestionas ${userData.clients.length} clientes asignados para ${currentUser}.`;
+                document.getElementById('task-count-text').innerText = `Tienes ${userData.tasks.length} tareas pendientes registradas.`;
+                
+                // Stats
+                document.getElementById('stat-total-clients').innerText = userData.clients.length;
+                document.getElementById('stat-pending-tasks').innerText = userData.tasks.filter(t => t.status !== 'Entregado').length;
+                document.getElementById('stat-completed-tasks').innerText = userData.tasks.filter(t => t.status === 'Entregado').length;
+                
+                if (window.ExpertosDB && ExpertosDB.orders) {
+                    document.getElementById('stat-active-orders').innerText = ExpertosDB.orders.getAll().length;
+                } else {
+                    document.getElementById('stat-active-orders').innerText = "0";
+                }
+            } catch (e) {
+                console.error('Error en renderDashboard:', e);
+            }
+        }
+
+        const statusOptions = [
+            "Pendiente",
+            "En Proceso",
+            "Revisando",
+            "Completado",
+            "Entregado",
+            "Cancelado"
+        ];
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Completado': return 'status-completed';
+                case 'Pendiente': return 'status-pending';
+                case 'En Proceso': return 'status-process';
+                case 'Revisando': return 'status-review';
+                case 'Entregado': return 'status-delivered';
+                case 'Cancelado': return 'status-cancelled';
+                default: return 'status-pending';
+            }
+        }
+
+        function renderClients() {
+            const tableBody = document.getElementById('clients-table-body');
+            document.getElementById('clients-user-info').innerText = `Mostrando base de datos de ${userData.clients.length} clientes para el ID: ${currentUser}`;
+            tableBody.innerHTML = userData.clients.map((c, index) => `
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.service}</td>
+                    <td>${c.date}</td>
+                    <td>
+                        <select class="status-select ${getStatusClass(c.status)}" onchange="updateClientStatus(${index}, this.value)">
+                            ${statusOptions.map(opt => `<option value="${opt}" ${c.status === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+                        </select>
+                    </td>
+                    <td><button class="btn-primary" style="padding: 5px 10px;" onclick="openClientFile(${index})">Gestionar</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateClientStatus(index, newStatus) {
+            const client = userData.clients[index];
+            const oldStatus = client.status;
+            client.status = newStatus;
+            
+            saveData(); // Persistir cambio
+            
+            ExpertosDB.logs.add('Cambio de Estado', `Cliente: ${client.name} | De: ${oldStatus} A: ${newStatus}`);
+            
+            showToast(`Estado de ${client.name} actualizado a ${newStatus}`);
+            renderClients();
+            renderDashboard();
+        }
+
+        function openClientFile(index) {
+            const client = userData.clients[index];
+            document.getElementById('modal-client-name').innerText = `Expediente: ${client.name}`;
+            document.getElementById('modal-client-service').innerText = `Servicio: ${client.service}`;
+            document.getElementById('clientFileModal').style.display = 'flex';
+            
+            ExpertosDB.logs.add('Apertura de Expediente', `Cliente: ${client.name}`);
+            
+            handleAction('archivos'); // Default view
+        }
+
+        function closeClientFile() {
+            document.getElementById('clientFileModal').style.display = 'none';
+        }
+
+        function handleAction(action) {
+            const viewer = document.getElementById('files-list');
+            const title = document.getElementById('viewer-title');
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('active'));
+            // Add active to current
+            const clickedBtn = Array.from(document.querySelectorAll('.action-btn')).find(btn => btn.innerText.toLowerCase().includes(action));
+            if (clickedBtn) clickedBtn.classList.add('active');
+
+            if (action === 'revisar' || action === 'comenzar' || action === 'archivos') {
+                title.innerText = action === 'archivos' ? "Documentos del Cliente" : "Visualizando Archivos de Trabajo";
+                
+                if (action === 'revisar' || action === 'comenzar') {
+                    ExpertosDB.logs.add('Visualización de Archivos', `Acción: ${action} en expediente ${document.getElementById('modal-client-name').innerText}`);
+                }
+
+                viewer.innerHTML = `
+                    <div class="file-item">
+                        <div class="file-info"><i class="fas fa-file-pdf"></i> <div><strong>Declaración_Anual_2025.pdf</strong><br><small>PDF - 2.4 MB</small></div></div>
+                        <button class="btn-primary" style="padding: 5px 10px;" onclick="showToast('Abriendo PDF...')">Ver</button>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info"><i class="fas fa-file-excel"></i> <div><strong>Libro_Diario_Mayo.xlsx</strong><br><small>Excel - 1.1 MB</small></div></div>
+                        <button class="btn-primary" style="padding: 5px 10px;" onclick="showToast('Abriendo Excel...')">Ver</button>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info"><i class="fas fa-image"></i> <div><strong>Comprobante_Pago_TSS.jpg</strong><br><small>Imagen - 800 KB</small></div></div>
+                        <button class="btn-primary" style="padding: 5px 10px;" onclick="showToast('Abriendo Imagen...')">Ver</button>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info"><i class="fas fa-file-word"></i> <div><strong>Contrato_Servicios_Firmado.docx</strong><br><small>Word - 1.5 MB</small></div></div>
+                        <button class="btn-primary" style="padding: 5px 10px;" onclick="showToast('Abriendo Word...')">Ver</button>
+                    </div>
+                `;
+            } else if (action === 'historial') {
+                title.innerText = "Historial de Cambios";
+                viewer.innerHTML = `
+                    <div class="file-item">
+                        <div class="file-info"><i class="fas fa-history"></i> <div><strong>Cambio de Estado: En Proceso</strong><br><small>Por: EMP-2026-001 - Hace 2 horas</small></div></div>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info"><i class="fas fa-history"></i> <div><strong>Archivo Cargado: Declaración_Anual_2025.pdf</strong><br><small>Por: Cliente - Hace 1 día</small></div></div>
+                    </div>
+                `;
+            } else if (action === 'finalizar') {
+                showToast("Proceso finalizado con éxito.");
+                closeClientFile();
+            }
+        }
+
+        function renderAgenda() {
+            const agendaList = document.getElementById('agenda-list');
+            document.getElementById('agenda-user-info').innerText = `${userData.tasks.length} Tareas Operativas para ${currentUser}`;
+            agendaList.innerHTML = userData.tasks.map((t, index) => `
+                <div class="config-item" style="${t.status === 'Entregado' ? 'opacity: 0.6; border-color: #2ecc71;' : ''}">
+                    <div>
+                        <strong style="${t.status === 'Entregado' ? 'text-decoration: line-through;' : ''}">${t.title}</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-gray);">${t.desc} | Hora: ${t.time}</p>
+                        ${t.status === 'Entregado' ? '<span class="status-pill status-completed" style="font-size: 0.7rem; margin-top: 5px; display: inline-block;">ENTREGADO</span>' : ''}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        ${t.status !== 'Entregado' ? `
+                            <button class="btn-primary" style="padding: 5px 12px; font-size: 0.75rem; background: #2ecc71; border: none;" onclick="deliverTask(${index})">
+                                <i class="fas fa-paper-plane"></i> Entregar
+                            </button>
+                        ` : '<i class="fas fa-check-circle" style="color: #2ecc71; font-size: 1.2rem;"></i>'}
+                        <i class="fas fa-calendar-check" style="color: var(--accent-gold);"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deliverTask(index) {
+            const task = userData.tasks[index];
+            task.status = "Entregado";
+            
+            saveData(); // Persistir cambio
+            
+            ExpertosDB.logs.add('Entrega de Tarea', `Tarea: ${task.title}`);
+            showToast(`¡Tarea entregada con éxito!`);
+            
+            renderAgenda();
+            renderDashboard();
+        }
+
+        // --- Database Real-time Rendering ---
+        function renderDatabase() {
+            if (!window.ExpertosDB) return;
+
+            // Render Contacts
+            const contacts = window.ExpertosDB.contacts.getAll();
+            const contactsBody = document.getElementById('db-contacts-body');
+            const contactStatuses = ["No Revisado", "Revisado", "En Proceso", "Aprobado", "Rechazado", "Completado"];
+
+            if (contactsBody) {
+                contactsBody.innerHTML = contacts.length ? contacts.map(c => `
+                    <tr>
+                        <td>${c.name}</td>
+                        <td>${c.email}</td>
+                        <td>${c.subject}</td>
+                        <td>${new Date(c.date).toLocaleString()}</td>
+                        <td style="display: flex; gap: 10px; align-items: center;">
+                            <select class="status-select ${c.status === 'Revisado' || c.status === 'Completado' ? 'status-completed' : (c.status === 'Rechazado' ? 'status-cancelled' : 'status-pending')}" 
+                                    onchange="updateDBStatus('contacts', ${c.id}, this.value)">
+                                ${contactStatuses.map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                            </select>
+                            <button class="btn-primary" style="background: #e74c3c; padding: 5px 8px; border: none;" onclick="deleteDBRecord('contacts', ${c.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('') : '<tr><td colspan="5" style="text-align:center;">No hay mensajes de contacto.</td></tr>';
+            }
+
+            // Render Orders
+            const orders = window.ExpertosDB.orders.getAll();
+            const ordersBody = document.getElementById('db-orders-body');
+            const orderStatuses = ["Pendiente", "En Proceso", "Completado", "Cancelado"];
+
+            if (ordersBody) {
+                ordersBody.innerHTML = orders.length ? orders.map(o => `
+                    <tr>
+                        <td>${o.id}</td>
+                        <td>RD$${o.total.toLocaleString()}</td>
+                        <td>${o.method.toUpperCase()}</td>
+                        <td>${new Date(o.date).toLocaleString()}</td>
+                        <td style="display: flex; gap: 10px; align-items: center;">
+                            <select class="status-select ${o.status === 'Completado' ? 'status-completed' : (o.status === 'Cancelado' ? 'status-cancelled' : 'status-pending')}" 
+                                    onchange="updateDBStatus('orders', '${o.id}', this.value)">
+                                ${orderStatuses.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('')}
+                            </select>
+                            <button class="btn-primary" style="background: #e74c3c; padding: 5px 8px; border: none;" onclick="deleteDBRecord('orders', '${o.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('') : '<tr><td colspan="5" style="text-align:center;">No hay pedidos registrados.</td></tr>';
+            }
+
+            // Render Logs
+            const logs = window.ExpertosDB.logs.getAll();
+            const logsBody = document.getElementById('db-logs-body');
+            if (logsBody) {
+                logsBody.innerHTML = logs.length ? logs.map(l => `
+                    <tr>
+                        <td>${l.user}</td>
+                        <td style="color: var(--accent-gold); font-weight: 700;">${l.action}</td>
+                        <td style="font-size: 0.75rem;">${l.details}</td>
+                        <td><span class="status-pill status-process" style="font-size: 0.7rem;">${l.method}</span></td>
+                        <td style="font-size: 0.75rem;">${new Date(l.timestamp).toLocaleString()}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="5" style="text-align:center;">No hay registros de seguridad.</td></tr>';
+            }
+        }
+
+        function updateDBStatus(type, id, newStatus) {
+            if (type === 'contacts') {
+                ExpertosDB.contacts.updateStatus(id, newStatus);
+            } else {
+                ExpertosDB.orders.updateStatus(id, newStatus);
+            }
+            showToast(`Estado de ${type === 'contacts' ? 'mensaje' : 'pedido'} actualizado a ${newStatus}`);
+            renderDatabase();
+        }
+
+        function deleteDBRecord(type, id) {
+            const confirmMsg = type === 'contacts' ? '¿Estás seguro de que deseas eliminar este mensaje?' : '¿Estás seguro de que deseas eliminar este pedido?';
+            
+            if (confirm(confirmMsg)) {
+                if (type === 'contacts') {
+                    ExpertosDB.contacts.delete(id);
+                } else {
+                    ExpertosDB.orders.delete(id);
+                }
+                
+                showToast(`Registro eliminado con éxito`);
+                renderDatabase();
+                
+                // Log security
+                ExpertosDB.logs.add('Eliminación de Registro', `Tipo: ${type} | ID: ${id}`);
+            }
+        }
+
+        // --- AI Chatbot Logic ---
+        function toggleChat() {
+            const window = document.getElementById('chatWindow');
+            window.style.display = window.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendChat() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            // Add user message
+            messages.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            // Simulate Bot Processing
+            setTimeout(() => {
+                const botResponse = getBotResponse(text.toLowerCase());
+                messages.innerHTML += `<div class="msg bot">${botResponse}</div>`;
+                messages.scrollTop = messages.scrollHeight;
+            }, 800);
+        }
+
+        function getBotResponse(input) {
+            // Knowledge Base
+            if (input.includes('hola') || input.includes('buenos días')) return "¡Hola! Estoy aquí para asistirte. ¿Deseas saber sobre nuestros servicios o cómo usar el panel?";
+            if (input.includes('servicios') || input.includes('hacen')) return "En Expertos Contables RD ofrecemos: Auditoría Financiera, Gestión de Impuestos (DGII), Contabilidad Externa, Consultoría de Negocios y Nóminas.";
+            if (input.includes('clientes')) return "Para gestionar tus clientes, ve a la sección 'Mis Clientes'. Allí puedes cambiar su estado o presionar 'Gestionar' para ver sus archivos.";
+            if (input.includes('tareas') || input.includes('agenda')) return "En 'Mi Agenda' puedes ver tus 40 tareas asignadas. Recuerda usar el botón verde 'Entregar' cuando termines una labor.";
+            if (input.includes('empresa') || input.includes('quienes son')) return "Somos Expertos Contables RD, una firma líder en República Dominicana dedicada a la excelencia financiera y fiscal para empresas modernas.";
+            if (input.includes('ayuda') || input.includes('navegar')) return "Puedes moverte usando la barra lateral: Dashboard (resumen), Mis Clientes (gestión), Mi Agenda (tareas) y Base de Datos (mensajes y pedidos).";
+            if (input.includes('gracias')) return "¡De nada! Es un placer ayudarte. ¿Hay algo más que necesites?";
+            if (input.includes('historial')) return "El historial de cada cliente se encuentra dentro de su expediente. Pulsa 'Gestionar' en la lista de clientes y luego en el botón 'Historial'.";
+            if (input.includes('archivos') || input.includes('pdf')) return "Para ver archivos, abre el expediente del cliente y presiona 'Ver Archivos' o 'Revisar'. Podrás ver PDFs, Excel e imágenes directamente.";
+            
+            return "Interesante pregunta. Como IA corporativa, puedo decirte que Expertos Contables RD se enfoca en la eficiencia. Te recomiendo revisar la sección de 'Mis Clientes' para ver el progreso de tus asignaciones.";
+        }
+
+        // Tab Logic for Database
+         document.querySelectorAll('.db-tab-btn').forEach(btn => {
+             btn.addEventListener('click', () => {
+                 document.querySelectorAll('.db-tab-btn').forEach(b => b.classList.remove('active'));
+                 document.querySelectorAll('.db-tab-content').forEach(c => c.style.display = 'none');
+                 
+                 btn.classList.add('active');
+                 const tabId = btn.getAttribute('data-tab');
+                 document.getElementById(tabId).style.display = 'block';
+             });
+         });
+
+         // Export Logic
+         const exportBtn = document.getElementById('export-db-btn');
+         if (exportBtn) {
+             exportBtn.addEventListener('click', () => {
+                 const activeTab = document.querySelector('.db-tab-btn.active').getAttribute('data-tab');
+                 const type = activeTab === 'db-contacts' ? 'contacts' : 'orders';
+                 if (window.ExpertosDB) {
+                     window.ExpertosDB.exportToCSV(type);
+                     showToast(`Exportando ${type === 'contacts' ? 'mensajes' : 'pedidos'} a Excel...`);
+                 }
+             });
+         }
+
+        // --- File Upload Logic ---
+        function handleFileUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            
+            const file = input.files[0];
+            const progressContainer = document.getElementById('upload-progress-container');
+            const progressBar = document.getElementById('upload-progress-bar');
+            const status = document.getElementById('upload-status');
+            
+            progressContainer.style.display = 'block';
+            status.innerText = `Subiendo: ${file.name}...`;
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    status.innerText = "¡Archivo cargado con éxito!";
+                    showToast(`Archivo ${file.name} guardado en el servidor.`);
+                    
+                    // Mostrar botón de acceso a la base de datos
+                    const vaultBtn = document.getElementById('btn-view-vault');
+                    if (vaultBtn) vaultBtn.style.display = 'block';
+
+                    setTimeout(() => {
+                        progressBar.style.width = '0%';
+                        input.value = '';
+                    }, 2000);
+                }
+                progressBar.style.width = `${progress}%`;
+            }, 300);
+        }
+        
+        // --- Navigation Logic ---
+        const navItems = document.querySelectorAll('.nav-item');
+        const sections = document.querySelectorAll('.section-panel');
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        function switchSection(targetId) {
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-target') === targetId) {
+                    item.classList.add('active');
+                }
+            });
+
+            sections.forEach(section => {
+                section.classList.remove('active');
+                if (section.id === targetId) {
+                    section.classList.add('active');
+                }
+            });
+
+            // Trigger specific renders
+            if (targetId === 'dashboard') renderDashboard();
+            if (targetId === 'clientes') renderClients();
+            if (targetId === 'agenda') renderAgenda();
+            if (targetId === 'database') renderDatabase();
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const target = item.getAttribute('data-target');
+                switchSection(target);
+            });
+        });
+
+        // Config Toggle Logic
+        document.getElementById('toggle-dark-mode').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.body.classList.toggle('advanced-dark');
+            const isActive = this.classList.contains('active');
+            showToast(isActive ? 'Modo Oscuro Avanzado Activado' : 'Modo Oscuro Avanzado Desactivado');
+        });
+
+        document.getElementById('toggle-notifications').addEventListener('click', function() {
+            const isActive = !this.classList.contains('active');
+            
+            if (isActive) {
+                if (!("Notification" in window)) {
+                    alert("Este navegador no soporta notificaciones de escritorio");
+                } else if (Notification.permission === "granted") {
+                    new Notification("Expertos Contables RD", { body: "Las alertas de vencimientos están activas." });
+                    this.classList.add('active');
+                    showToast('Notificaciones Activadas');
+                } else if (Notification.permission !== "denied") {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === "granted") {
+                            new Notification("Expertos Contables RD", { body: "Notificaciones configuradas correctamente." });
+                            this.classList.add('active');
+                            showToast('Notificaciones Activadas');
+                        }
+                    });
+                }
+            } else {
+                this.classList.remove('active');
+                showToast('Notificaciones Desactivadas');
+            }
+        });
+
+        document.getElementById('toggle-2fa').addEventListener('click', function() {
+            this.classList.toggle('active');
+            const isActive = this.classList.contains('active');
+            if (isActive) {
+                alert('Seguridad 2FA: Se ha vinculado su dispositivo móvil. Se solicitará código en el próximo inicio de sesión.');
+                showToast('Seguridad 2FA Activada');
+            } else {
+                showToast('Seguridad 2FA Desactivada');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

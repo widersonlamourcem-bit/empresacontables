@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previsualización Móvil - Expertos Contables RD</title>
+    <style>
+        :root {
+            --bg-color: #010811;
+            --accent: #c5a059;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0a192f;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+        }
+        .container {
+            position: relative;
+            width: 375px; /* Ancho iPhone 12/13/14 */
+            height: 812px;
+            background: #000;
+            border: 12px solid #333;
+            border-radius: 40px;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+        /* Notch del teléfono */
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #333;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 10;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .btn-toggle {
+            background: var(--accent);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .btn-toggle:hover {
+            transform: scale(1.05);
+        }
+        .info {
+            margin-bottom: 20px;
+            max-width: 500px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="info">
+        <h2>Simulador de Aspecto Android</h2>
+        <p>Esta es una vista previa de cómo se comporta la página en un dispositivo móvil. Observa la <b>barra de navegación inferior</b> y el diseño adaptado.</p>
+    </div>
+
+    <div class="container">
+        <div class="notch"></div>
+        <iframe src="index.html" id="preview-frame"></iframe>
+    </div>
+
+    <div class="controls">
+        <button class="btn-toggle" onclick="toggleSize()">Cambiar Tamaño (iPhone / Android)</button>
+        <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">Nota: Para una experiencia real, abre el archivo index.html en tu celular.</p>
+    </div>
+
+    <script>
+        let isLarge = false;
+        function toggleSize() {
+            const container = document.querySelector('.container');
+            if (isLarge) {
+                container.style.width = '375px';
+                container.style.height = '812px';
+            } else {
+                container.style.width = '412px'; // Samsung Galaxy S20/Android standard
+                container.style.height = '915px';
+            }
+            isLarge = !isLarge;
+        }
+    </script>
+</body>
+</html>

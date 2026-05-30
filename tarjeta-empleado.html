@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta Digital Empleado | Expertos Contables RD</title>
+    <link rel="icon" type="image/png" href="contables.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent-gold: #c5a059;
+            --soft-black: #020c1b;
+            --deep-blue: #0a192f;
+            --text-gray: #8892b0;
+        }
+        body {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            padding: 20px;
+        }
+        .card-container {
+            width: 100%;
+            max-width: 350px;
+            perspective: 1000px;
+        }
+        .id-card {
+            background: linear-gradient(135deg, #0a192f 0%, #020c1b 100%);
+            border: 1px solid var(--accent-gold);
+            border-radius: 30px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(197, 160, 89, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .id-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(197, 160, 89, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header-logo {
+            width: 70px;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px var(--accent-gold));
+        }
+        .corp-name {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+        .photo-container {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-gold);
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.03);
+            position: relative;
+        }
+        .photo-container i {
+            font-size: 5rem;
+            color: var(--accent-gold);
+        }
+        .emp-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+        .emp-role {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+        .qr-section {
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .qr-section img { width: 100%; height: 100%; }
+        .emp-id {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            background: rgba(197, 160, 89, 0.1);
+            padding: 8px 20px;
+            border-radius: 50px;
+            color: var(--accent-gold);
+            display: inline-block;
+            font-size: 0.9rem;
+            border: 1px solid rgba(197, 160, 89, 0.3);
+        }
+        .instructions {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+        .actions {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .btn-action {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-action:hover {
+            background: var(--accent-gold);
+            color: black;
+        }
+        .btn-primary-card {
+            background: var(--accent-gold);
+            color: black;
+            border: none;
+        }
+
+        @media (max-height: 700px) {
+            .id-card { padding: 1.5rem; }
+            .photo-container { width: 100px; height: 100px; }
+            .qr-section { width: 140px; height: 140px; }
+        }
+
+        /* Preview Modal for Mobile Download */
+        .download-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 3000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .download-preview {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 20px;
+            border: 2px solid var(--accent-gold);
+            margin-bottom: 2rem;
+            box-shadow: 0 0 30px rgba(197, 160, 89, 0.3);
+        }
+        .download-info {
+            text-align: center;
+            color: white;
+        }
+        .download-info h3 { color: var(--accent-gold); margin-bottom: 0.5rem; }
+        .download-info p { font-size: 0.9rem; margin-bottom: 1.5rem; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="id-card" id="capture">
+            <img src="contables.png" alt="Logo" class="header-logo">
+            <div class="corp-name">Expertos Contables RD</div>
+            
+            <div class="photo-container">
+                <i class="fas fa-user-tie"></i>
+            </div>
+
+            <div class="emp-name">Anderson L.</div>
+            <div class="emp-role">Especialista Senior</div>
+
+            <div class="qr-section" id="qrTarget">
+                <!-- QR dinámico -->
+            </div>
+
+            <div class="emp-id">ID: EMP-2026-001</div>
+
+            <p class="instructions">
+                <i class="fas fa-shield-alt"></i> Tarjeta de Acceso Digital Segura.<br>
+                Escanea para ingreso automático.
+            </p>
+        </div>
+
+        <div class="actions">
+            <button class="btn-action btn-primary-card" onclick="downloadCard()">
+                <i class="fas fa-download"></i> Guardar en mi Teléfono
+            </button>
+            <a href="empleados.html" class="btn-action">
+                <i class="fas fa-arrow-left"></i> Volver al Acceso
+            </a>
+        </div>
+    </div>
+
+    <!-- Download Overlay -->
+    <div id="downloadOverlay" class="download-overlay">
+        <div class="download-info">
+            <h3>¡Tarjeta Generada!</h3>
+            <p>Mantén presionada la imagen de abajo y selecciona <br><strong>"Guardar en Fotos"</strong></p>
+        </div>
+        <img id="previewImg" class="download-preview">
+        <button class="btn-action" onclick="document.getElementById('downloadOverlay').style.display='none'">
+            <i class="fas fa-times"></i> Cerrar
+        </button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const qrTarget = document.getElementById('qrTarget');
+            // Usamos la URL base actual + el parámetro de login automático
+            let baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            const loginUrl = baseUrl + 'empleados.html?qr_login=EMP-2026-001';
+            
+            const qrImg = document.createElement('img');
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(loginUrl)}&timestamp=${Date.now()}`;
+            qrImg.alt = "QR de Acceso";
+            qrTarget.appendChild(qrImg);
+        });
+
+        function downloadCard() {
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generando...';
+            
+            // Aseguramos que el QR y las imágenes estén listos
+            const captureArea = document.querySelector("#capture");
+            
+            html2canvas(captureArea, {
+                backgroundColor: "#000",
+                scale: 3, // Mayor calidad para que el QR sea perfecto
+                borderRadius: 30,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Mostrar en el overlay para que el usuario pueda guardar manualmente (obligatorio en iPhone)
+                const overlay = document.getElementById('downloadOverlay');
+                const previewImg = document.getElementById('previewImg');
+                previewImg.src = imgData;
+                overlay.style.display = 'flex';
+
+                // Intentar descarga automática para computadoras
+                const link = document.createElement('a');
+                link.download = 'Tarjeta_Acceso_Expertos.png';
+                link.href = imgData;
+                link.click();
+                
+                btn.innerHTML = '<i class="fas fa-check"></i> ¡Listo!';
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                }, 3000);
+            }).catch(err => {
+                console.error("Error al generar la tarjeta:", err);
+                btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+            });
+        }
+    </script>
+</body>
+</html>

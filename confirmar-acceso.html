@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar Acceso | Expertos Contables RD</title>
+    <link rel="icon" type="image/png" href="contables.png">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --accent-gold: #c5a059;
+            --deep-blue: #0a192f;
+        }
+        body {
+            background: #020c1b;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .confirm-card {
+            background: rgba(10, 25, 47, 0.9);
+            border: 1px solid var(--accent-gold);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            max-width: 400px;
+            width: 100%;
+        }
+        i.main-icon {
+            font-size: 4rem;
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+        }
+        h2 { font-family: 'Montserrat', sans-serif; margin-bottom: 1rem; }
+        p { color: #8892b0; margin-bottom: 2.5rem; line-height: 1.5; }
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            margin-bottom: 10px;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        .btn-allow { background: var(--accent-gold); color: black; }
+        .btn-cancel { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); }
+        .success-msg { display: none; }
+    </style>
+</head>
+<body>
+    <div class="confirm-card" id="authBox">
+        <i class="fas fa-shield-check main-icon"></i>
+        <h2>Autorización</h2>
+        <p>¿Desea iniciar sesión en el <strong>Panel de Empleado</strong> para la computadora solicitante?</p>
+        
+        <button class="btn btn-allow" onclick="authorize()">Permitir Acceso</button>
+        <button class="btn btn-cancel" onclick="cancel()">Cancelar</button>
+    </div>
+
+    <div class="confirm-card success-msg" id="successBox">
+        <i class="fas fa-check-circle main-icon" style="color: #2ecc71;"></i>
+        <h2>¡Acceso Autorizado!</h2>
+        <p>La computadora ha sido validada correctamente. Puedes cerrar esta ventana en tu móvil.</p>
+        <button class="btn btn-cancel" onclick="window.close()">Cerrar</button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionID = urlParams.get('sid');
+        const empID = urlParams.get('emp') || 'EMP-2026-001';
+
+        function authorize() {
+            if (!sessionID) return alert("Sesión inválida");
+            
+            // Guardamos la autorización en localStorage (simulando backend)
+            const authData = {
+                status: 'authorized',
+                empID: empID,
+                timestamp: Date.now(),
+                device: /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'iPhone' : 'Móvil',
+                ip: '186.150.242.10' // IP Simulada
+            };
+            
+            localStorage.setItem(`auth_${sessionID}`, JSON.stringify(authData));
+            
+            document.getElementById('authBox').style.display = 'none';
+            document.getElementById('successBox').style.display = 'block';
+        }
+
+        function cancel() {
+            window.close();
+        }
+    </script>
+</body>
+</html>
